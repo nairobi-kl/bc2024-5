@@ -42,6 +42,18 @@ app.get('/notes/:name', async (req, res) => {
   }
 });
 
+app.put('/notes/:name', async (req, res) => {
+  const name = req.params.name;
+  const filePath = path.join(cache, `${name}.txt`);
+  const { text } = req.body;
+  try {
+    await fs.readFile(filePath, 'utf-8'); 
+    await fs.writeFile(filePath, text, 'utf-8');
+    res.send('Note updated');
+  } catch {
+    res.status(404).json({ error: 'Note not found' });
+  }
+});
 
 const server = http.createServer(app);
 server.listen(port, host, () => {
