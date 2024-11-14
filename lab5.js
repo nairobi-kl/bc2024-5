@@ -55,6 +55,17 @@ app.put('/notes/:name', async (req, res) => {
   }
 });
 
+app.delete('/notes/:name', async (req, res) => {
+  const name = req.params.name;
+  const filePath = path.join(cache, `${name}.txt`);
+  try {
+    await fs.unlink(filePath);
+    res.send('Note deleted');
+  } catch {
+    res.status(404).json({ error: 'Note not found' });
+  }
+});
+
 const server = http.createServer(app);
 server.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);
