@@ -30,6 +30,19 @@ app.get('/UploadForm.html', async (req, res) => {
   }
 });
 
+
+app.get('/notes/:name', async (req, res) => {
+  const name = req.params.name;
+  const filePath = path.join(cache, `${name}.txt`);
+   try {
+    const text = await fs.readFile(filePath, 'utf-8');
+    res.send(text);
+  } catch {
+    res.status(404).json({ error: 'Note not found' });
+  }
+});
+
+
 const server = http.createServer(app);
 server.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);
