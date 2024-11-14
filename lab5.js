@@ -66,6 +66,27 @@ app.delete('/notes/:name', async (req, res) => {
   }
 });
 
+app.get('/notes', async (req, res) => {
+  try {
+    const files = await fs.readdir(cache); 
+    const notes = [];
+    for (const file of files) {
+      try {
+        const filePath = path.join(cache, file); 
+        const text = await fs.readFile(filePath, 'utf-8'); 
+        const noteName = path.basename(file, '.txt'); 
+        notes.push({ name: noteName, text }); 
+      } catch (readErr) {
+        console.error(`Error reading file ${file}:`, readErr);
+      }
+    }
+    res.json(notes); 
+  } catch (err) {
+    console.error('Error reading directory or files:', err);
+    res.status(500).json({ error: 'Error reading notes' }); 
+  }
+});
+
 const server = http.createServer(app);
 server.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);
