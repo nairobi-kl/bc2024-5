@@ -87,6 +87,26 @@ app.get('/notes', async (req, res) => {
   }
 });
 
+app.post('/write', async (req, res) => {
+  const { note_name, note } = req.body;
+  const notePath = path.join(cache, `${note_name}.txt`);
+  if (!note || !note_name) {
+    return res.status(400).json({ error: 'Note name and text are required' });
+  } else {
+     try {
+    await fs.readFile(notePath, 'utf-8'); 
+    return res.status(400).json({ error: 'Note already exists' });
+  } catch {
+    try {
+      await fs.writeFile(notePath, note, 'utf-8'); 
+      return res.status(201).json({ message: 'Note created' });
+    } catch (error) {
+      return res.status(500).json({ error: 'Error writing note' });
+    }
+  }
+  }
+});
+
 const server = http.createServer(app);
 server.listen(port, host, () => {
   console.log(`Server is running at http://${host}:${port}`);
